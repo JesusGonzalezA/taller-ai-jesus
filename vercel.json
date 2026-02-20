@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "destination": "/api"
     },
     {
       "source": "/(.*)",
@@ -13,8 +13,8 @@
     }
   ],
   "functions": {
-    "backend/src/index.ts": {
-      "runtime": "nodejs20.x"
+    "api/index.ts": {
+      "includeFiles": "backend/**"
     }
   }
 }
