@@ -1,4 +1,4 @@
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
 import { generateObject, generateText } from 'ai';
 import {
   type Company,
@@ -6,6 +6,10 @@ import {
   type Publication,
   generatedCampaignSchema,
 } from '../types';
+
+const openai = createOpenAI({
+  baseURL: 'https://gateway.ai.vercel.com/v1/openai',
+});
 
 const MODEL = process.env.AI_MODEL ?? 'gpt-4o';
 
