@@ -105,7 +105,7 @@ export default function CalendarView({
         <div className="flex-1" />
 
         <span className="text-sm text-gray-500">
-          {sorted.length} publicación{sorted.length !== 1 ? 'es' : ''}
+          {sorted.length === 1 ? '1 publicación' : `${sorted.length} publicaciones`}
         </span>
       </div>
 
