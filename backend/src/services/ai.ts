@@ -1,4 +1,4 @@
-import { createOpenAI } from '@ai-sdk/openai';
+import { gateway } from '@ai-sdk/gateway';
 import { generateObject, generateText } from 'ai';
 import {
   type Company,
@@ -7,11 +7,7 @@ import {
   generatedCampaignSchema,
 } from '../types';
 
-const openai = createOpenAI({
-  baseURL: 'https://gateway.ai.vercel.com/v1/openai',
-});
-
-const MODEL = process.env.AI_MODEL ?? 'gpt-4o';
+const MODEL = process.env.AI_MODEL ?? 'openai/gpt-4o';
 
 function buildCampaignPrompt(company: Company, sourceContent: string, dateRange?: string): string {
   const networks = company.socialNetworks
@@ -61,7 +57,7 @@ export async function generateCampaign(
   const range = dateRange ? `from ${dateRange.start} to ${dateRange.end}` : undefined;
 
   const { object } = await generateObject({
-    model: openai(MODEL),
+    model: gateway(MODEL),
     schema: generatedCampaignSchema,
     prompt: buildCampaignPrompt(company, sourceContent, range),
     temperature: 0.7,
@@ -76,7 +72,7 @@ export async function regeneratePublication(
   feedback: string,
 ): Promise<{ copy: string; imagePrompt: string; hashtags: string[] }> {
   const { object } = await generateObject({
-    model: openai(MODEL),
+    model: gateway(MODEL),
     schema: generatedCampaignSchema.shape.publications.element.pick({
       copy: true,
       imagePrompt: true,
@@ -109,7 +105,7 @@ export async function generateImagePromptRefinement(
   style: string,
 ): Promise<string> {
   const { text } = await generateText({
-    model: openai(MODEL),
+    model: gateway(MODEL),
     prompt: `You are an expert at writing prompts for AI image generation tools like DALL-E and Midjourney.
 
 Given this description: "${description}"
