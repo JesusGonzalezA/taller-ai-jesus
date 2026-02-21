@@ -1,4 +1,3 @@
-import { gateway } from '@ai-sdk/gateway';
 import { generateObject, generateText } from 'ai';
 import {
   type Company,
@@ -57,7 +56,7 @@ export async function generateCampaign(
   const range = dateRange ? `from ${dateRange.start} to ${dateRange.end}` : undefined;
 
   const { object } = await generateObject({
-    model: gateway(MODEL),
+    model: MODEL,
     schema: generatedCampaignSchema,
     prompt: buildCampaignPrompt(company, sourceContent, range),
     temperature: 0.7,
@@ -72,7 +71,7 @@ export async function regeneratePublication(
   feedback: string,
 ): Promise<{ copy: string; imagePrompt: string; hashtags: string[] }> {
   const { object } = await generateObject({
-    model: gateway(MODEL),
+    model: MODEL,
     schema: generatedCampaignSchema.shape.publications.element.pick({
       copy: true,
       imagePrompt: true,
@@ -105,7 +104,7 @@ export async function generateImagePromptRefinement(
   style: string,
 ): Promise<string> {
   const { text } = await generateText({
-    model: gateway(MODEL),
+    model: MODEL,
     prompt: `You are an expert at writing prompts for AI image generation tools like DALL-E and Midjourney.
 
 Given this description: "${description}"
