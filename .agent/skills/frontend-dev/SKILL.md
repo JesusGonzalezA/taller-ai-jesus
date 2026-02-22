@@ -1,5 +1,6 @@
 ---
-description: Cómo desarrollar componentes y páginas en el frontend (React + Vite)
+name: frontend-dev
+description: Cómo desarrollar componentes y páginas en el frontend (React + Vite). Usa esta skill cuando necesites crear componentes React, añadir rutas, conectar con el backend o escribir tests de componentes.
 ---
 
 # Skill: Desarrollo Frontend

@@ -1,5 +1,6 @@
 ---
-description: Cómo añadir endpoints y middleware en el backend (Express + TypeScript)
+name: backend-dev
+description: Cómo añadir endpoints y middleware en el backend (Express + TypeScript). Usa esta skill cuando necesites crear rutas, middleware, tests de integración o manejo de errores en el backend.
 ---
 
 # Skill: Desarrollo Backend
