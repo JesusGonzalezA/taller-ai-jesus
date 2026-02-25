@@ -21,14 +21,14 @@ Antes de escribir código, define brevemente:
 - ¿Qué endpoints de API necesita?
 - ¿Qué componentes de UI necesita?
 
-Si toca frontend y backend, consulta la skill `full-stack-feature.md`.
+Si toca frontend y backend, consulta la skill `full-stack-feature`.
 
 ## Paso 3 — Implementa
 
 Sigue la skill correspondiente según lo que necesites:
-- Solo frontend → `.agents/skills/frontend-dev.md`
-- Solo backend → `.agents/skills/backend-dev.md`
-- Ambos → `.agents/skills/full-stack-feature.md`
+- Solo frontend → skill `frontend-dev`
+- Solo backend → skill `backend-dev`
+- Ambos → skill `full-stack-feature`
 
 ## Paso 4 — Tests
 

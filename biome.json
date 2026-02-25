@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["node_modules", "dist", "build", ".vercel", "coverage"]
+    "ignore": [
+      "node_modules",
+      "dist",
+      "build",
+      ".vercel",
+      "coverage",
+      "storybook-static",
+      ".storybook"
+    ]
   },
   "formatter": {
     "enabled": true,
