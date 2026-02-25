@@ -1,0 +1,92 @@
+/* ─── Base ────────────────────────────────────────────────── */
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--font-family-sans);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-base), border-color var(--transition-base), color
+    var(--transition-base), box-shadow var(--transition-base);
+  outline: none;
+  user-select: none;
+  padding: 0;
+  line-height: 1;
+}
+
+.iconButton:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.iconButton svg {
+  width: 1em;
+  height: 1em;
+  pointer-events: none;
+}
+
+/* ─── Variants ────────────────────────────────────────────── */
+.ghost {
+  background-color: transparent;
+  color: var(--color-neutral-600);
+  border-color: transparent;
+}
+.ghost:hover:not(.disabled) {
+  background-color: var(--color-neutral-100);
+  color: var(--color-neutral-900);
+}
+.ghost:active:not(.disabled) {
+  background-color: var(--color-neutral-200);
+}
+
+.outline {
+  background-color: transparent;
+  color: var(--color-neutral-700);
+  border-color: var(--color-border);
+}
+.outline:hover:not(.disabled) {
+  background-color: var(--color-neutral-50);
+  border-color: var(--color-border-strong);
+}
+.outline:active:not(.disabled) {
+  background-color: var(--color-neutral-100);
+}
+
+.primary {
+  background-color: var(--color-primary-600);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary-600);
+}
+.primary:hover:not(.disabled) {
+  background-color: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+}
+
+/* ─── Sizes ───────────────────────────────────────────────── */
+.sm {
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+}
+
+.md {
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: var(--font-size-md);
+}
+
+.lg {
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: var(--font-size-lg);
+  border-radius: var(--radius-lg);
+}
+
+/* ─── Disabled ────────────────────────────────────────────── */
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
