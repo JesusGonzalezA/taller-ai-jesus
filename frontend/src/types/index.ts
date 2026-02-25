@@ -45,6 +45,7 @@ export interface SocialNetwork {
 // ─── Company ────────────────────────────────────────────────────────────────
 
 export interface Company {
+  id: string;
   name: string;
   description: string;
   industry: string;
@@ -54,7 +55,7 @@ export interface Company {
   socialNetworks: SocialNetwork[];
 }
 
-export const EMPTY_COMPANY: Company = {
+export const EMPTY_COMPANY: Omit<Company, 'id'> = {
   name: '',
   description: '',
   industry: '',
@@ -92,4 +93,5 @@ export interface Campaign {
   createdAt: string;
   status: CampaignStatus;
   publications: Publication[];
+  companyId?: string | null;
 }

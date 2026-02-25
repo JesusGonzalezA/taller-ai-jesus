@@ -9,7 +9,7 @@ import type { Publication } from '../types';
 
 export default function CampaignDetail() {
   const { id } = useParams<{ id: string }>();
-  const { company } = useCompany();
+  const { activeCompany } = useCompany();
   const { getCampaign, updatePublication, reorderPublications } = useCampaigns();
   const [regeneratingIds, setRegeneratingIds] = useState<Set<string>>(new Set());
 
@@ -28,11 +28,11 @@ export default function CampaignDetail() {
 
   const handleRegenerate = async (pubId: string, feedback: string) => {
     const pub = campaign.publications.find((p) => p.id === pubId);
-    if (!pub) return;
+    if (!pub || !activeCompany) return;
 
     setRegeneratingIds((prev) => new Set(prev).add(pubId));
     try {
-      const updated = await regeneratePublication(company, pub, feedback);
+      const updated = await regeneratePublication(activeCompany, pub, feedback);
       updatePublication(campaign.id, pubId, {
         copy: updated.copy,
         imagePrompt: updated.imagePrompt,

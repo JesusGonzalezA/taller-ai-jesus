@@ -1,6 +1,6 @@
 import { Loader2, Sparkles } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import FileUploader from '../components/FileUploader';
 import { useCampaigns } from '../context/CampaignContext';
 import { useCompany } from '../context/CompanyContext';
@@ -8,7 +8,7 @@ import { generateCampaign } from '../lib/api';
 
 export default function CampaignNew() {
   const navigate = useNavigate();
-  const { company, isConfigured } = useCompany();
+  const { activeCompany, isConfigured } = useCompany();
   const { addCampaign } = useCampaigns();
 
   const [sourceContent, setSourceContent] = useState('');
@@ -16,13 +16,13 @@ export default function CampaignNew() {
   const [error, setError] = useState<string | null>(null);
 
   const handleGenerate = async () => {
-    if (!sourceContent.trim()) return;
+    if (!sourceContent.trim() || !activeCompany) return;
     setLoading(true);
     setError(null);
 
     try {
-      const campaign = await generateCampaign(company, sourceContent);
-      addCampaign(campaign);
+      const campaign = await generateCampaign(activeCompany, sourceContent);
+      await addCampaign({ ...campaign, companyId: activeCompany.id });
       navigate(`/campaigns/${campaign.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al generar la campaña');
@@ -44,23 +44,24 @@ export default function CampaignNew() {
       {!isConfigured && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
           ⚠️ Configura primero tu empresa y al menos una red social en{' '}
-          <a href="/company" className="underline font-medium">
-            Configuración de empresa
-          </a>{' '}
+          <Link to="/companies" className="underline font-medium">
+            Empresas
+          </Link>{' '}
           para obtener mejores resultados.
         </div>
       )}
 
       {/* Company summary */}
-      {isConfigured && (
+      {isConfigured && activeCompany && (
         <div className="bg-brand-50 border border-brand-200 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-brand-900 mb-1">
-            Generando para: {company.name}
+            Generando para: {activeCompany.name}
           </h3>
           <p className="text-sm text-brand-700">
-            {company.socialNetworks.length} red{company.socialNetworks.length !== 1 ? 'es' : ''}{' '}
-            configurada{company.socialNetworks.length !== 1 ? 's' : ''}:{' '}
-            {company.socialNetworks.map((n) => n.platform).join(', ')}
+            {activeCompany.socialNetworks.length} red
+            {activeCompany.socialNetworks.length !== 1 ? 'es' : ''} configurada
+            {activeCompany.socialNetworks.length !== 1 ? 's' : ''}:{' '}
+            {activeCompany.socialNetworks.map((n) => n.platform).join(', ')}
           </p>
         </div>
       )}

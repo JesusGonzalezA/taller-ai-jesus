@@ -4,7 +4,7 @@ import { useCampaigns } from '../context/CampaignContext';
 import { useCompany } from '../context/CompanyContext';
 
 export default function Dashboard() {
-  const { company, isConfigured } = useCompany();
+  const { activeCompany, isConfigured } = useCompany();
   const { campaigns } = useCampaigns();
 
   const totalPubs = campaigns.reduce((sum, c) => sum + c.publications.length, 0);
@@ -19,7 +19,7 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-500 mt-1">
           {isConfigured
-            ? `Bienvenido de vuelta, ${company.name}`
+            ? `Bienvenido de vuelta, ${activeCompany?.name}`
             : 'Configura tu empresa para empezar'}
         </p>
       </div>
