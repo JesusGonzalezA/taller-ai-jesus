@@ -42,3 +42,17 @@ export function regeneratePublication(
     body: JSON.stringify({ company, publication, feedback }),
   });
 }
+
+export function generateImage(imagePrompt: string): Promise<{ base64: string; mediaType: string }> {
+  return request('/campaigns/generate-image', {
+    method: 'POST',
+    body: JSON.stringify({ imagePrompt }),
+  });
+}
+
+export function generateVideo(videoPrompt: string): Promise<{ base64: string; mediaType: string }> {
+  return request('/campaigns/generate-video', {
+    method: 'POST',
+    body: JSON.stringify({ videoPrompt }),
+  });
+}

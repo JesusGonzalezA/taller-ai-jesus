@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import { Router } from 'express';
-import { generateCampaign, regeneratePublication } from '../services/ai';
+import {
+  generateCampaign,
+  generateImageFromPrompt,
+  generateVideoFromPrompt,
+  regeneratePublication,
+} from '../services/ai';
 import { companySchema, publicationSchema } from '../types';
 import type { Campaign, Publication } from '../types';
 
@@ -37,6 +42,7 @@ router.post('/generate', async (req, res) => {
         scheduledDate: pub.scheduledDate,
         copy: pub.copy,
         imagePrompt: pub.imagePrompt,
+        videoPrompt: pub.videoPrompt,
         hashtags: pub.hashtags,
         order: index,
         status: 'draft' as const,
@@ -83,6 +89,7 @@ router.post('/regenerate-publication', async (req, res) => {
       ...parsedPub.data,
       copy: result.copy,
       imagePrompt: result.imagePrompt,
+      videoPrompt: result.videoPrompt,
       hashtags: result.hashtags,
     };
 
@@ -91,6 +98,44 @@ router.post('/regenerate-publication', async (req, res) => {
     console.error('Publication regeneration failed:', error);
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: 'Regeneration failed', message });
+  }
+});
+
+// POST /api/campaigns/generate-image – Generate an image from a prompt
+router.post('/generate-image', async (req, res) => {
+  try {
+    const { imagePrompt } = req.body;
+
+    if (!imagePrompt || typeof imagePrompt !== 'string') {
+      res.status(400).json({ error: 'imagePrompt is required and must be a string' });
+      return;
+    }
+
+    const result = await generateImageFromPrompt(imagePrompt);
+    res.json(result);
+  } catch (error) {
+    console.error('Image generation failed:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: 'Image generation failed', message });
+  }
+});
+
+// POST /api/campaigns/generate-video – Generate a video using xai/grok-imagine-video
+router.post('/generate-video', async (req, res) => {
+  try {
+    const { videoPrompt } = req.body;
+
+    if (!videoPrompt || typeof videoPrompt !== 'string') {
+      res.status(400).json({ error: 'videoPrompt is required and must be a string' });
+      return;
+    }
+
+    const result = await generateVideoFromPrompt(videoPrompt);
+    res.json(result);
+  } catch (error) {
+    console.error('Video generation failed:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: 'Video generation failed', message });
   }
 });
 

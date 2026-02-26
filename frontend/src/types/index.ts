@@ -76,6 +76,8 @@ export interface Publication {
   copy: string;
   imagePrompt: string;
   imageUrl?: string;
+  videoPrompt: string;
+  videoUrl?: string;
   hashtags: string[];
   order: number;
   status: PublicationStatus;

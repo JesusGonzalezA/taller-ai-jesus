@@ -1,4 +1,5 @@
-import { generateObject, generateText } from 'ai';
+import { gateway } from '@ai-sdk/gateway';
+import { experimental_generateVideo, generateImage, generateObject } from 'ai';
 import {
   type Company,
   type GeneratedCampaign,
@@ -7,6 +8,8 @@ import {
 } from '../types';
 
 const MODEL = process.env.AI_MODEL ?? 'openai/gpt-4o';
+const IMAGE_MODEL_ID = process.env.AI_IMAGE_MODEL ?? 'xai/grok-imagine-image';
+const VIDEO_MODEL_ID = 'xai/grok-imagine-video';
 
 function buildCampaignPrompt(company: Company, sourceContent: string, dateRange?: string): string {
   const networks = company.socialNetworks
@@ -45,6 +48,7 @@ Rules:
 5. Each publication must have a detailed image prompt in English describing the visual for AI image generation.
 6. Include relevant hashtags per platform.
 7. Make the campaign cohesive – all publications should support the same narrative.
+8. Each publication must also have a detailed video prompt in English describing a short video concept (motion, transitions, camera angles, visual narrative) suitable for AI video generation.
 `;
 }
 
@@ -69,12 +73,13 @@ export async function regeneratePublication(
   company: Company,
   publication: Publication,
   feedback: string,
-): Promise<{ copy: string; imagePrompt: string; hashtags: string[] }> {
+): Promise<{ copy: string; imagePrompt: string; videoPrompt: string; hashtags: string[] }> {
   const { object } = await generateObject({
     model: MODEL,
     schema: generatedCampaignSchema.shape.publications.element.pick({
       copy: true,
       imagePrompt: true,
+      videoPrompt: true,
       hashtags: true,
     }),
     prompt: `You are an expert social-media copywriter.
@@ -88,31 +93,36 @@ export async function regeneratePublication(
 Copy: ${publication.copy}
 Hashtags: ${publication.hashtags.join(' ')}
 Image Prompt: ${publication.imagePrompt}
+Video Prompt: ${publication.videoPrompt}
 
 ## User feedback
 ${feedback}
 
-Rewrite the copy, hashtags, and image prompt incorporating the feedback. Keep the same platform conventions.`,
+Rewrite the copy, hashtags, image prompt, and video prompt incorporating the feedback. Keep the same platform conventions.`,
     temperature: 0.7,
   });
 
   return object;
 }
 
-export async function generateImagePromptRefinement(
-  description: string,
-  style: string,
-): Promise<string> {
-  const { text } = await generateText({
-    model: MODEL,
-    prompt: `You are an expert at writing prompts for AI image generation tools like DALL-E and Midjourney.
-
-Given this description: "${description}"
-And this brand style: "${style}"
-
-Write a single, detailed image generation prompt (1-3 sentences) that would produce a professional marketing-quality image. Output ONLY the prompt, nothing else.`,
-    temperature: 0.7,
+export async function generateImageFromPrompt(
+  imagePrompt: string,
+): Promise<{ base64: string; mediaType: string }> {
+  const { image } = await generateImage({
+    model: gateway.imageModel(IMAGE_MODEL_ID),
+    prompt: imagePrompt,
   });
 
-  return text;
+  return { base64: image.base64, mediaType: image.mediaType };
+}
+
+export async function generateVideoFromPrompt(
+  videoPrompt: string,
+): Promise<{ base64: string; mediaType: string }> {
+  const { video } = await experimental_generateVideo({
+    model: gateway.videoModel(VIDEO_MODEL_ID),
+    prompt: videoPrompt,
+  });
+
+  return { base64: video.base64, mediaType: video.mediaType };
 }

@@ -1,5 +1,16 @@
-import { Check, ChevronDown, ChevronUp, Copy, Download, Image, RefreshCw } from 'lucide-react';
+import {
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Download,
+  Image,
+  Loader2,
+  RefreshCw,
+  Video,
+} from 'lucide-react';
 import { useState } from 'react';
+import { generateImage, generateVideo } from '../lib/api';
 import type { Publication } from '../types';
 import { PLATFORM_COLORS, PLATFORM_LABELS } from '../types';
 
@@ -26,6 +37,18 @@ export default function PublicationCard({
   const [feedback, setFeedback] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [generatedImageData, setGeneratedImageData] = useState<{
+    base64: string;
+    mediaType: string;
+  } | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [generatedVideoData, setGeneratedVideoData] = useState<{
+    base64: string;
+    mediaType: string;
+  } | null>(null);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
 
   const date = new Date(publication.scheduledDate).toLocaleDateString('es-ES', {
     weekday: 'short',
@@ -51,6 +74,9 @@ ${publication.hashtags.map((h) => (h.startsWith('#') ? h : `#${h}`)).join(' ')}
 
 ## Image Prompt
 ${publication.imagePrompt}
+
+## Video Prompt
+${publication.videoPrompt}
 `;
     const blob = new Blob([content], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
@@ -72,6 +98,32 @@ ${publication.imagePrompt}
       onRegenerate(feedback);
       setFeedback('');
       setShowFeedback(false);
+    }
+  };
+
+  const handleRefineImagePrompt = async () => {
+    setIsGeneratingImage(true);
+    setImageError(null);
+    try {
+      const result = await generateImage(publication.imagePrompt);
+      setGeneratedImageData(result);
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : 'Error al generar la imagen');
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  const handleGenerateVideo = async () => {
+    setIsGeneratingVideo(true);
+    setVideoError(null);
+    try {
+      const result = await generateVideo(publication.videoPrompt);
+      setGeneratedVideoData(result);
+    } catch (err) {
+      setVideoError(err instanceof Error ? err.message : 'Error al generar el vídeo');
+    } finally {
+      setIsGeneratingVideo(false);
     }
   };
 
@@ -204,7 +256,76 @@ ${publication.imagePrompt}
             <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
               {publication.imagePrompt}
             </p>
+            <button
+              type="button"
+              onClick={handleRefineImagePrompt}
+              disabled={isGeneratingImage}
+              className="mt-2 flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-purple-300 text-purple-700 hover:bg-purple-50 disabled:opacity-50"
+            >
+              {isGeneratingImage ? (
+                <Loader2 size={12} className="animate-spin" />
+              ) : (
+                <Image size={12} />
+              )}
+              {isGeneratingImage ? 'Generando imagen...' : 'Generar imagen'}
+            </button>
+            {imageError && (
+              <div className="mt-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">{imageError}</div>
+            )}
+            {generatedImageData && (
+              <div className="mt-3">
+                <img
+                  src={`data:${generatedImageData.mediaType};base64,${generatedImageData.base64}`}
+                  alt="Imagen generada por IA"
+                  className="w-full max-w-lg rounded-lg shadow-md"
+                />
+              </div>
+            )}
           </div>
+
+          {/* Video prompt */}
+          {publication.videoPrompt && (
+            <div>
+              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                <Video size={14} className="inline mr-1" />
+                Prompt de vídeo
+              </h4>
+              <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                {publication.videoPrompt}
+              </p>
+              <button
+                type="button"
+                onClick={handleGenerateVideo}
+                disabled={isGeneratingVideo}
+                className="mt-2 flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-indigo-300 text-indigo-700 hover:bg-indigo-50 disabled:opacity-50"
+              >
+                {isGeneratingVideo ? (
+                  <Loader2 size={12} className="animate-spin" />
+                ) : (
+                  <Video size={12} />
+                )}
+                {isGeneratingVideo ? 'Generando vídeo...' : 'Generar vídeo'}
+              </button>
+              {videoError && (
+                <div className="mt-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+                  {videoError}
+                </div>
+              )}
+              {generatedVideoData && (
+                <div className="mt-3">
+                  <video
+                    src={`data:${generatedVideoData.mediaType};base64,${generatedVideoData.base64}`}
+                    controls
+                    autoPlay
+                    className="w-full max-w-lg rounded-lg shadow-md"
+                  >
+                    <track kind="captions" />
+                    Tu navegador no soporta la reproducción de vídeo.
+                  </video>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex flex-wrap gap-2">

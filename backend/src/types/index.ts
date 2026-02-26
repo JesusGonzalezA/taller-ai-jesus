@@ -49,6 +49,8 @@ export const publicationSchema = z.object({
   copy: z.string().describe('Publication text / caption'),
   imagePrompt: z.string().describe('Detailed prompt for image generation'),
   imageUrl: z.string().optional(),
+  videoPrompt: z.string().describe('Detailed prompt for video generation'),
+  videoUrl: z.string().optional(),
   hashtags: z.array(z.string()),
   order: z.number(),
   status: publicationStatusSchema,
@@ -81,6 +83,11 @@ export const generatedPublicationSchema = z.object({
   imagePrompt: z
     .string()
     .describe('Detailed visual description for AI image generation, in English'),
+  videoPrompt: z
+    .string()
+    .describe(
+      'Detailed prompt for AI video generation in English, describing motion, transitions and visual narrative for a short video',
+    ),
   hashtags: z.array(z.string()),
 });
 
